@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:testapi/models/user.dart';
+import 'package:testapi/ui/globals.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key key}) : super(key: key);
@@ -8,14 +12,15 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  /*
-  Ticket ticket;
+  User user;
 
-  Future<Ticket> _gonderiGetir() async {
-    var response = await http.get(
-        "https://anybwnk52i.execute-api.eu-central-1.amazonaws.com/test/departureTimes");
+  Future<User> _gonderiGetir() async {
+    final _getUsers =
+        "http://10.0.2.2:5000/api/v1/users/GetUsers";
+    var response = await http.get(_getUsers);
     if (response.statusCode == 200) {
-      return Ticket.fromJson(json.decode(response.body));
+      print(response.body);
+      return User.fromJson(json.decode(response.body));
     } else {
       throw Exception("Bağlanamadık ${response.statusCode}");
     }
@@ -26,9 +31,11 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     debugPrint("addi");
     _gonderiGetir().then((okunanGonderi) {
-      ticket = okunanGonderi;
+      user = okunanGonderi;
+      print(user.data[0].lastname);
     });
-  }*/
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,35 +56,30 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
             ),
-            /*Expanded(
+            Expanded(
                 child: FutureBuilder(
               future: _gonderiGetir(),
-              builder: (BuildContext context, AsyncSnapshot<Ticket> snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
                 if (snapshot.hasData) {
                   return ListView(
                     children: snapshot.data.data
                         .map((doc) => Card(
                               child: Container(
                                 child: ListTile(
-                                  leading: Icon(Icons.nightlight_round),
+                                  leading: Icon(Icons.account_circle_rounded),
                                   title: Row(
                                     children: [
                                       Text(
-                                        doc.route + " / ",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      Text(
-                                        doc.departureTime +
-                                            "-" +
-                                            doc.arrivalTime,
+                                        doc.firstname +
+                                            " " +
+                                            doc.lastname,
                                         style: TextStyle(
                                             fontWeight: FontWeight.w700),
                                       ),
                                     ],
                                   ),
                                   subtitle: Text(
-                                    doc.daysOfWeek.toString(),
+                                    doc.email,
                                   ),
                                 ),
                               ),
@@ -90,7 +92,7 @@ class _MainPageState extends State<MainPage> {
                   );
                 }
               },
-            ))*/
+            ))
           ],
         ),
       ),

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:testapi/models/register_user.dart';
+import 'package:testapi/models/user.dart';
+import 'package:testapi/ui/login.dart';
 
 class Register extends StatefulWidget {
   const Register({Key key}) : super(key: key);
@@ -8,12 +13,15 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  final _nameController = TextEditingController();
+  final _firstnameController = TextEditingController();
+  final _lastnameController = TextEditingController();
   final _mailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _checkPasswordController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _professionController = TextEditingController();
+  String msg = "";
+
+  User user;
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,12 +61,21 @@ class _RegisterState extends State<Register> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20,),
+                  SizedBox(
+                    height: 20,
+                  ),
                   TextFormField(
-                    controller: _nameController,
+                    controller: _firstnameController,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.account_circle),
-                      hintText: "Full Name",
+                      hintText: "First Name",
+                    ),
+                  ),
+                  TextFormField(
+                    controller: _lastnameController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.account_circle),
+                      hintText: "Last Name",
                     ),
                   ),
                   TextFormField(
@@ -77,42 +94,16 @@ class _RegisterState extends State<Register> {
                       hintText: "Password",
                     ),
                   ),
-                  TextFormField(
-                    obscureText: true,
-                    controller: _checkPasswordController,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock),
-                      hintText: "Confirm Password",
-                    ),
-                  ),
-                  TextFormField(
-                    keyboardType: TextInputType.number,
-                    //controller: _dogumYiliController,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.date_range),
-                      hintText: "Birth Year(example: 1996)",
-                    ),
-                  ),
-                  TextFormField(
-                    controller: _cityController,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.location_city),
-                      hintText: "City",
-                    ),
-                  ),
-                  TextFormField(
-                    controller: _professionController,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.card_travel),
-                      hintText: "Proffesion",
-                    ),
-                  ),
                   Container(
                     margin: EdgeInsets.only(top: 10),
                     width: 300,
                     child: FlatButton(
                       onPressed: () {
-                        //register();
+                        register(
+                            _firstnameController.text,
+                            _lastnameController.text,
+                            _mailController.text,
+                            _passwordController.text);
                       },
                       child: Text(
                         "REGISTER",
@@ -124,6 +115,7 @@ class _RegisterState extends State<Register> {
                       color: Colors.green[400],
                     ),
                   ),
+                  Text(msg,style: TextStyle(fontSize: 20,color:Colors.red)),
                 ],
               ),
             ),
@@ -132,31 +124,44 @@ class _RegisterState extends State<Register> {
       ),
     );
   }
-  /*register(String email, String pass) async {
-    Map data = {'email': email, 'password': pass};
-    var jsonResponse = null;
-    debugPrint("email: " + email + " pass: " + pass);
-    var response = await http.post(
-        "https://anybwnk52i.execute-api.eu-central-1.amazonaws.com/test/login",
-        body: data);
-    if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
-      userid = jsonResponse['data']['userId'];
-      debugPrint(jsonResponse.toString());
 
-      if (jsonResponse != null) {
-        setState(() {
-          _checklogin = false;
-          isLoggedIn = true;
-          change();
-        });
+  register(String firstname, String lastname, String email, String pass) async {
+    /*final registerrequest = RegisterUserRequestModel(
+      firstname: firstname,
+      lastname: lastname,
+      email: email,
+      password: pass,
+    );*/
+    Map data = {
+      'firstname': firstname,
+      'lastname': lastname,
+      'email': email,
+      'password': pass
+    };
+    var jsonResponse = null;
+    var body = json.encode(data);
+
+    var response = await http.post("http://10.0.2.2:5000/api/v1/users/Register",
+        headers: {"Content-Type": "application/json"}, body: body);
+
+    print(response.statusCode.toString());
+
+    if (response.statusCode == 200) {
+    
+      if (response.body.isNotEmpty) {
+        jsonResponse = json.decode(response.body);
+        print(jsonResponse.toString());
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (BuildContext context) {
+          return Login();
+        }));
+      } else {
+        print("kkk");
       }
     } else {
-      jsonResponse = json.decode(response.body);
-      _message = jsonResponse['message'];
       setState(() {
-        _checklogin = true;
+        msg = "Kayıt başarısız";
       });
     }
-  }*/
+  }
 }

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:testapi/models/user.dart';
 import 'package:testapi/ui/mainpage.dart';
 import 'package:testapi/ui/register.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import 'globals.dart';
 
 class Login extends StatefulWidget {
   const Login({Key key}) : super(key: key);
@@ -10,6 +15,17 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  
+  String msg = "";
+
+    @override
+  void initState() {
+    super.initState();
+    msg = "";
+  }
+
+
+
   final _mailController = TextEditingController();
   final _passwordController = TextEditingController();
   @override
@@ -50,7 +66,9 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 50,),
+                  SizedBox(
+                    height: 50,
+                  ),
                   TextFormField(
                     keyboardType: TextInputType.emailAddress,
                     controller: _mailController,
@@ -72,10 +90,7 @@ class _LoginState extends State<Login> {
                     width: 300,
                     child: FlatButton(
                       onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (BuildContext context) {
-                          return MainPage();
-                        }));
+                        login(_mailController.text,_passwordController.text);
                       },
                       child: Text(
                         "LOGIN",
@@ -107,6 +122,7 @@ class _LoginState extends State<Login> {
                       color: Colors.green[400],
                     ),
                   ),
+                  Text(msg,style: TextStyle(fontSize: 20,color: Colors.red),)
                 ],
               ),
             ),
@@ -115,31 +131,27 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-  /*signIn(String email, String pass) async {
+
+  login(String email, String pass) async {
     Map data = {'email': email, 'password': pass};
     var jsonResponse = null;
-    debugPrint("email: " + email + " pass: " + pass);
-    var response = await http.post(
-        "https://anybwnk52i.execute-api.eu-central-1.amazonaws.com/test/login",
-        body: data);
+    var body = json.encode(data);
+
+    var response = await http.post("http://10.0.2.2:5000/api/v1/users/Login",
+        headers: {"Content-Type": "application/json"}, body: body);
+
     if (response.statusCode == 200) {
       jsonResponse = json.decode(response.body);
-      userid = jsonResponse['data']['userId'];
-      debugPrint(jsonResponse.toString());
-
-      if (jsonResponse != null) {
-        setState(() {
-          _checklogin = false;
-          isLoggedIn = true;
-          change();
-        });
-      }
+      userid = jsonResponse['data']['id'].toString();
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (BuildContext context) {
+        return MainPage();
+      }));
     } else {
-      jsonResponse = json.decode(response.body);
-      _message = jsonResponse['message'];
       setState(() {
-        _checklogin = true;
+        msg = "Kullanıcı adı veya şifre yanlış";
       });
+      
     }
-  }*/
+  }
 }
