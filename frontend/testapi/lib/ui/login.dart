@@ -137,7 +137,7 @@ class _LoginState extends State<Login> {
     var jsonResponse = null;
     var body = json.encode(data);
 
-    var response = await http.post("http://10.0.2.2:5000/api/v1/users/Login",
+    var response = await http.post("${url}/Login",
         headers: {"Content-Type": "application/json"}, body: body);
 
     if (response.statusCode == 200) {

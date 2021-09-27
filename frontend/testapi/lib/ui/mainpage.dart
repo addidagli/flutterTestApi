@@ -16,10 +16,9 @@ class _MainPageState extends State<MainPage> {
 
   Future<User> _gonderiGetir() async {
     final _getUsers =
-        "http://10.0.2.2:5000/api/v1/users/GetUsers";
+        "${url}/GetUsers";
     var response = await http.get(_getUsers);
     if (response.statusCode == 200) {
-      print(response.body);
       return User.fromJson(json.decode(response.body));
     } else {
       throw Exception("Bağlanamadık ${response.statusCode}");
@@ -32,7 +31,6 @@ class _MainPageState extends State<MainPage> {
     debugPrint("addi");
     _gonderiGetir().then((okunanGonderi) {
       user = okunanGonderi;
-      print(user.data[0].lastname);
     });
   }
 

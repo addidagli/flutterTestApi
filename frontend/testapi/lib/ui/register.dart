@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:testapi/models/register_user.dart';
 import 'package:testapi/models/user.dart';
+import 'package:testapi/ui/globals.dart';
 import 'package:testapi/ui/login.dart';
 
 class Register extends StatefulWidget {
@@ -141,7 +142,7 @@ class _RegisterState extends State<Register> {
     var jsonResponse = null;
     var body = json.encode(data);
 
-    var response = await http.post("http://10.0.2.2:5000/api/v1/users/Register",
+    var response = await http.post("${url}/Register",
         headers: {"Content-Type": "application/json"}, body: body);
 
     print(response.statusCode.toString());
